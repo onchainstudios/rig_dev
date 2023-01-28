@@ -29,6 +29,17 @@ JAW_TRANS = 'Jaw_offset'
 MUZZLE_TRANS = 'Muzzle_offset'
 LIP_LF_TRANS = 'Lip_Lf_offset'
 LIP_RT_TRANS = 'Lip_Rt_offset'
+NOSE_TRANS = 'Nose_offset'
+BROW_LF_IN_TRANS = 'Brow_Lf_In_offset'
+BROW_LF_OT_TRANS = 'Brow_Lf_Ot_offset'
+BROW_RT_IN_TRANS = 'Brow_Rt_In_offset'
+BROW_RT_OT_TRANS = 'Brow_Rt_Ot_offset'
+EYE_LOOK_W_TRANS = 'eye_world'
+EYE_LOOK_H_TRANS = 'eye_head'
+EYE_L_LOOK_TRANS = 'LeftEyeLookAt_grp'
+EYE_R_LOOK_TRANS = 'RightEyeLookAt_grp'
+EYE_L_AIM_TRANS = 'left_eye_aim_grp'
+EYE_R_AIM_TRANS = 'right_eye_aim_grp'
 
 
 class FaceRigUI(QtWidgets.QWidget):
@@ -55,7 +66,7 @@ class FaceRigUI(QtWidgets.QWidget):
         self.muzzle_layout.addWidget(self.muzzle_button)
         self.muzzle_layout.addItem(self.muzzle_spacer)
         self.muzzle_layout.addWidget(self.muzzle_help_button)
-        
+
         # Jaw Vertex
         self.jaw_button = VertexButton("Set Jaw Vtx")
         self.jaw_spacer = QtWidgets.QSpacerItem(50, 20, QtWidgets.QSizePolicy.Minimum,
@@ -100,7 +111,18 @@ class FaceRigUI(QtWidgets.QWidget):
         self.lip_bot_layout.addItem(self.lip_bot_spacer)
         self.lip_bot_layout.addWidget(self.lip_bot_help_button)
 
-        # Nose
+        # Nose bridge
+        self.bridge_button = VertexButton('Set Nose Bridge Vtx')
+        self.bridge_spacer = QtWidgets.QSpacerItem(50, 20, QtWidgets.QSizePolicy.Minimum,
+                                                 QtWidgets.QSizePolicy.Expanding)
+        self.bridge_help_button = VertexButton('?')
+
+        self.bridge_layout = QtWidgets.QHBoxLayout()
+        self.bridge_layout.addWidget(self.bridge_button)
+        self.bridge_layout.addItem(self.bridge_spacer)
+        self.bridge_layout.addWidget(self.bridge_help_button)
+
+        # Nose bottom
         self.nose_button = VertexButton('Set Nose Bottom Vtx')
         self.nose_spacer = QtWidgets.QSpacerItem(50, 20, QtWidgets.QSizePolicy.Minimum,
                                                    QtWidgets.QSizePolicy.Expanding)
@@ -180,15 +202,20 @@ class FaceRigUI(QtWidgets.QWidget):
         layout.addLayout(self.lip_corner_layout)
         layout.addLayout(self.lip_top_layout)
         layout.addLayout(self.lip_bot_layout)
+        layout.addLayout(self.bridge_layout)
         layout.addLayout(self.nose_layout)
         layout.addLayout(self.brow_in_layout)
         layout.addLayout(self.brow_ot_layout)
+        layout.addLayout(self.lid_tp_layout)
+        layout.addLayout(self.lid_bt_layout)
         layout.addLayout(self.eye_layout)
         layout.addItem(self.build_spacer)
         layout.addWidget(self.build_button)
         self.setLayout(layout)
 
         self.connect_buttons()
+
+        self.set_defaults()
 
     def connect_buttons(self):
 
@@ -197,10 +224,13 @@ class FaceRigUI(QtWidgets.QWidget):
         self.lip_corner_button.clicked.connect(self.vertex_click)
         self.lip_top_button.clicked.connect(self.vertex_click)
         self.lip_bot_button.clicked.connect(self.vertex_click)
+        self.bridge_button.clicked.connect(self.vertex_click)
         self.nose_button.clicked.connect(self.vertex_click)
         self.brow_in_button.clicked.connect(self.vertex_click)
         self.brow_ot_button.clicked.connect(self.vertex_click)
         self.eye_button.clicked.connect(self.vertex_click)
+        self.lid_tp_button.clicked.connect(self.vertex_click)
+        self.lid_bt_button.clicked.connect(self.vertex_click)
         self.build_button.clicked.connect(self.build)
 
     def vertex_click(self):
@@ -208,6 +238,22 @@ class FaceRigUI(QtWidgets.QWidget):
         sender.setStyleSheet('background-color: #006600;')
         sender.vertex = cmds.ls(sl=True)[0]
         print(sender.vertex)
+
+    def set_defaults(self):
+        print('setting defaults for testing')
+        self.muzzle_button.vertex = 'body_GEO.vtx[256]'
+        self.jaw_button.vertex = 'body_GEO.vtx[429]'
+        self.lip_corner_button.vertex = 'body_GEO.vtx[804]'
+        self.lip_top_button.vertex = 'body_GEO.vtx[1013]'
+        self.lip_bot_button.vertex = 'body_GEO.vtx[2770]'
+        self.bridge_button.vertex = 'body_GEO.vtx[131]'
+        self.nose_button.vertex = 'body_GEO.vtx[931]'
+        self.brow_in_button.vertex = 'body_GEO.vtx[3201]'
+        self.brow_ot_button.vertex = 'body_GEO.vtx[3212]'
+        self.eye_button.vertex = 'leftEye_GEO.vtx[24]'
+        self.lid_tp_button.vertex = 'body_GEO.vtx[157]'
+        self.lid_bt_button.vertex = 'body_GEO.vtx[561]'
+
 
     def build(self):
         path = os.path.abspath(__file__)
@@ -219,6 +265,10 @@ class FaceRigUI(QtWidgets.QWidget):
         # place_jaw(self.jaw_button.vertex, self.lip_bot_button.vertex)
         place_lip_corner(self.lip_corner_button.vertex)
         place_lip_center(self.lip_top_button.vertex, self.lip_bot_button.vertex)
+        place_lids(self.lid_tp_button.vertex, self.lid_bt_button.vertex)
+        place_nose(self.bridge_button.vertex, self.nose_button.vertex)
+        place_brows(self.brow_in_button.vertex, self.brow_ot_button.vertex)
+        place_eyes(self.eye_button.vertex)
 
 class VertexButton(QtWidgets.QPushButton):
     def __int__(self):
@@ -268,17 +318,17 @@ def createMayaWindow(widget, *args, **kwargs):
     return win
 
 def place_muzzle(vertex):
-    raw_pos = cmds.pointPosition(vertex)
+    raw_pos = cmds.pointPosition(vertex, w=True)
     pos = [0.0,raw_pos[1],raw_pos[2]]
-    cmds.xform(MUZZLE_TRANS, ws=True, t=pos)
+    move_to_point(MUZZLE_TRANS, pos)
 
 def place_jaw(jaw_vert, lip_vert):
-    raw_pos = cmds.pointPosition(jaw_vert)
+    raw_pos = cmds.pointPosition(jaw_vert, w=True)
     pos = [0.0, raw_pos[1], raw_pos[2]]
-    cmds.xform(JAW_TRANS, ws=True, t=pos)
+    move_to_point(JAW_TRANS, pos)
 
     temp_lip = cmds.createNode('transform')
-    cmds.xform(temp_lip, ws=True,t=cmds.pointPosition(lip_vert))
+    move_to_point(temp_lip, cmds.pointPosition(lip_vert, w=True))
 
     # aim at lower lip
     aim_cons = cmds.aimConstraint(temp_lip, JAW_TRANS,aim=[1,0,0], u=[0,1,0],wu=[0,-1,0])[0]
@@ -297,9 +347,9 @@ def place_lip_corner(lip_vert):
     'Corner_Driver_SIDE_inDn_rig',
     'Corner_Driver_SIDE_otDn_rig'
     ]
-    
-    pos = cmds.pointPosition(lip_vert)
-    
+
+    pos = cmds.pointPosition(lip_vert, w=True)
+
     for side in ['Lf','Rt']:
         temp = cmds.createNode('transform')
         cmds.matchTransform(temp, f'Lip_{side}_offset')
@@ -308,11 +358,11 @@ def place_lip_corner(lip_vert):
             cons.append(cmds.parentConstraint(temp, node.replace('SIDE',side), mo=True))
 
         if side == 'Lf':
-            cmds.xform(temp, ws=True, t=pos)
-            cmds.xform(f'Lip_{side}_offset', ws=True,t=pos)
+            move_to_point(temp, pos)
+            move_to_point(f'Lip_{side}_offset', pos)
         else:
-            cmds.xform(temp, ws=True, t=[pos[0]*-1, pos[1], pos[2]])
-            cmds.xform(f'Lip_{side}_offset', ws=True, t=[pos[0]*-1, pos[1], pos[2]])
+            move_to_point(temp, [pos[0]*-1, pos[1], pos[2]])
+            move_to_point(f'Lip_{side}_offset', [pos[0]*-1, pos[1], pos[2]])
 
         for con in cons:
             cmds.delete(con)
@@ -320,14 +370,114 @@ def place_lip_corner(lip_vert):
         cmds.delete(temp)
 
 def place_lip_center(top_vert, bot_vert):
-    top_pos = cmds.pointPosition(top_vert)
-    bot_pos = cmds.pointPosition(bot_vert)
+    top_pos = cmds.pointPosition(top_vert, w=True)
+    bot_pos = cmds.pointPosition(bot_vert, w=True)
     average_z = (top_pos[2] + bot_pos[2])/2
-    cmds.xform('Lip_Top_offset', ws=True, t=[top_pos[0], top_pos[1],average_z])
-    cmds.xform('Lip_Bot_offset', ws=True, t=[bot_pos[0], bot_pos[1], average_z])
+
+    # temporarily delete parent constraints
+    top = cmds.listConnections('Lip_Top_offset.translateX', s=True)[0]
+    bot = cmds.listConnections('Lip_Bot_offset.translateX', s=True)[0]
+    if top:
+        cmds.delete(top)
+    if bot:
+        cmds.delete(bot)
+
+    move_to_point('Lip_Top_offset', [top_pos[0], top_pos[1],average_z])
+    move_to_point('Lip_Bot_offset', [bot_pos[0], bot_pos[1], average_z])
+
+    # rebuild constraints
+    cmds.parentConstraint('jaw_muzzle_top_lip_driver', 'Lip_Top_offset', mo=True)
+    cmds.parentConstraint('Jaw', 'Lip_Bot_offset', mo=True)
+
+def place_lids(top_vert, bot_vert):
+    top_pos = cmds.pointPosition(top_vert, w=True)
+    bot_pos = cmds.pointPosition(bot_vert, w=True)
+    average_z = (top_pos[2] + bot_pos[2]) / 2
+
+    move_to_point('Lf_top_lid_grp', [top_pos[0], top_pos[1], average_z])
+    move_to_point('Lf_bot_lid_grp', [bot_pos[0], bot_pos[1], average_z])
+
+    move_to_point('Rt_top_lid_grp', [top_pos[0]*-1, top_pos[1], average_z])
+    move_to_point('Rt_bot_lid_grp', [bot_pos[0]*-1, bot_pos[1], average_z])
+
+def place_nose(nose_vert, bottom_vert):
+
+    # still need to place nostrils
+
+    # get offset constraint and delete it
+    print(f'listing connections on {NOSE_TRANS}')
+    cons = cmds.listConnections(f'{NOSE_TRANS}.translateX', s=True, d=False)[0]
+
+    if cons:
+        print(f'nose deleting {cons}')
+        cmds.delete(cons)
+
+    raw_base_pos = cmds.pointPosition(nose_vert, w=True)
+    base_pos = [0.0, raw_base_pos[1], raw_base_pos[2]]
+
+    raw_bot_pos = cmds.pointPosition(bottom_vert, w=True)
+    bot_pos = [0.0, raw_bot_pos[1], raw_bot_pos[0]]
+
+    move_to_point(NOSE_TRANS, base_pos)
+
+    temp = cmds.createNode('transform')
+    move_to_point(temp, bot_pos)
+
+    aim_cons = cmds.aimConstraint(temp, NOSE_TRANS, aim=[0, -1, 0], u=[0, 0, 1], wu=[0, 0, 1])[0]
+    cmds.delete(aim_cons)
+    cmds.delete(temp)
+
+    # reconstrain to muzzle
+    cmds.parentConstraint('Muzzle', NOSE_TRANS, mo=True)
+
+def place_brows(in_vert, out_vert):
+    lf_in_pos = cmds.pointPosition(in_vert, w=True)
+    lf_ot_pos = cmds.pointPosition(out_vert, w=True)
+
+    rt_in_pos = [lf_in_pos[0]*-1, lf_in_pos[1], lf_in_pos[2]]
+    rt_ot_pos = [lf_ot_pos[0]*-1, lf_ot_pos[1], lf_ot_pos[2]]
+
+    move_to_point(BROW_LF_IN_TRANS, lf_in_pos)
+    move_to_point(BROW_LF_OT_TRANS, lf_ot_pos)
+    move_to_point(BROW_RT_IN_TRANS, rt_in_pos)
+    move_to_point(BROW_RT_OT_TRANS, rt_ot_pos)
+
+def place_eyes(eye_vert):
+    vert_pos = cmds.pointPosition(eye_vert, w=True)
+    center_pos = [0.0, vert_pos[1], vert_pos[2]]
+    # place look at just place the Y
+    current_pos = cmds.xform(EYE_LOOK_W_TRANS, q=True, ws=True, rp=True)
+
+    # place aim groups
+    move_to_point(EYE_LOOK_W_TRANS, [0.0, vert_pos[1], current_pos[2]])
+    move_to_point(EYE_LOOK_H_TRANS, [0.0, vert_pos[1], current_pos[2]])
+
+    # place left right
+    current_left = cmds.xform(EYE_L_LOOK_TRANS, q=True, ws=True, rp=True)
+    current_right = cmds.xform(EYE_R_LOOK_TRANS, q=True, ws=True, rp=True)
+    move_to_point(EYE_L_LOOK_TRANS, [vert_pos[0], vert_pos[1], current_left[2]])
+    move_to_point(EYE_R_LOOK_TRANS, [vert_pos[0]*-1.0, vert_pos[1], current_right[2]])
+
+    move_to_point(EYE_L_AIM_TRANS, [vert_pos[0], vert_pos[1], vert_pos[2] - 6.0])
+    move_to_point(EYE_R_AIM_TRANS, [vert_pos[0]*-1.0, vert_pos[1], vert_pos[2] - 6.0])
+
+def move_to_point(transform, pos):
+    # create temp trans to snap to point and then snap the trans to the temp trans since xform wasn't working well
+    temp = cmds.spaceLocator(p=pos, n=f'{transform}_loc')[0]
+    cmds.xform(temp, ws=True, t=pos)
+    print(f'attempting to match {transform} to {temp}')
+    cmds.matchTransform(transform, temp, pos=True, rot=False)
+    # cmds.delete(temp)
+
+
+
+
+
+
+
+
     
-def place_nose():
-    pass
+
 
 
 
