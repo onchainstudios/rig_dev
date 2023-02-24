@@ -188,6 +188,41 @@ class FaceRigUI(QtWidgets.QWidget):
         self.eye_layout.addItem(self.eye_spacer)
         self.eye_layout.addWidget(self.eye_help_button)
 
+        # place eye
+        self.eye_separator = QtWidgets.QFrame()
+        self.eye_separator.setFrameShape(QtWidgets.QFrame.HLine)
+        self.eye_layout = QtWidgets.QVBoxLayout()
+        self.eye_browse_layout = QtWidgets.QHBoxLayout()
+        self.eye_browse_label = QtWidgets.QLabel('Eye Texture Map')
+        self.eye_browse_button = QtWidgets.QPushButton('Browse')
+        self.eye_text = QtWidgets.QTextEdit()
+        self.eye_text.setMaximumSize(500, 25)
+        self.eye_text.setText('G:\\Shared drives\\Art Department\\production\\3d\\images\\starWars\\char\\rt\\tpa028_luke\\ska109_farmer\\starWars_char_luke_ska000_eyes_rt_2048_TEXT_albe.png')
+        self.eye_geo_separator = QtWidgets.QFrame()
+        self.eye_geo_separator.setFrameShape(QtWidgets.QFrame.HLine)
+        self.eye_geo_layout = QtWidgets.QHBoxLayout()
+        # self.eye_geo_label = QtWidgets.QLabel('Choose both left and right eye geo')
+        # self.eye_geo_text = QtWidgets.QTextEdit()
+        # self.eye_geo_text.setMaximumSize(500, 25)
+        # self.eye_geoselect_button = QtWidgets.QPushButton('Choose selected')
+        self.eye_placement_separator = QtWidgets.QFrame()
+        self.eye_placement_separator.setFrameShape(QtWidgets.QFrame.HLine)
+        self.eye_placement_button = QtWidgets.QPushButton('Create Eye Placement Locator')
+
+        self.eye_layout.addWidget(self.eye_separator)
+        self.eye_layout.addLayout(self.eye_browse_layout)
+        self.eye_browse_layout.addWidget(self.eye_browse_label)
+        self.eye_browse_layout.addWidget(self.eye_text)
+        self.eye_browse_layout.addWidget(self.eye_browse_button)
+        # self.eye_layout.addWidget(self.eye_geo_separator)
+        # self.eye_layout.addWidget(self.eye_geo_label)
+        # self.eye_layout.addLayout(self.eye_geo_layout)
+        # self.eye_geo_layout.addWidget(self.eye_geo_text)
+        # self.eye_geo_layout.addWidget(self.eye_geoselect_button)
+        self.eye_layout.addWidget(self.eye_placement_separator)
+        self.eye_layout.addWidget(self.eye_placement_button)
+
+
         # Build
         self.build_spacer = QtWidgets.QSpacerItem(20, 60, QtWidgets.QSizePolicy.Minimum,
                                                 QtWidgets.QSizePolicy.Expanding)
@@ -232,6 +267,9 @@ class FaceRigUI(QtWidgets.QWidget):
         self.lid_tp_button.clicked.connect(self.vertex_click)
         self.lid_bt_button.clicked.connect(self.vertex_click)
         self.build_button.clicked.connect(self.build)
+        self.eye_placement_button.clicked.connect(self.eye_placement_click)
+        self.eye_browse_button.clicked.connect(self.browse_click)
+        # self.eye_geoselect_button.clicked.connect(self.choose_eye_click)
 
     def vertex_click(self):
         sender = self.sender()
@@ -241,18 +279,38 @@ class FaceRigUI(QtWidgets.QWidget):
 
     def set_defaults(self):
         print('setting defaults for testing')
-        self.muzzle_button.vertex = 'body_GEO.vtx[256]'
-        self.jaw_button.vertex = 'body_GEO.vtx[429]'
-        self.lip_corner_button.vertex = 'body_GEO.vtx[804]'
-        self.lip_top_button.vertex = 'body_GEO.vtx[1013]'
-        self.lip_bot_button.vertex = 'body_GEO.vtx[2770]'
-        self.bridge_button.vertex = 'body_GEO.vtx[131]'
-        self.nose_button.vertex = 'body_GEO.vtx[931]'
+        self.muzzle_button.vertex = 'body_GEO.vtx[1682]'
+        self.jaw_button.vertex = 'body_GEO.vtx[1681]'
+        self.lip_corner_button.vertex = 'body_GEO.vtx[1721]'
+        self.lip_top_button.vertex = 'body_GEO.vtx[136]'
+        self.lip_bot_button.vertex = 'body_GEO.vtx[135]'
+        self.bridge_button.vertex = 'body_GEO.vtx[1776]'
+        self.nose_button.vertex = 'body_GEO.vtx[140]'
         self.brow_in_button.vertex = 'body_GEO.vtx[3201]'
         self.brow_ot_button.vertex = 'body_GEO.vtx[3212]'
-        self.eye_button.vertex = 'leftEye_GEO.vtx[24]'
-        self.lid_tp_button.vertex = 'body_GEO.vtx[157]'
-        self.lid_bt_button.vertex = 'body_GEO.vtx[561]'
+        self.lid_tp_button.vertex = 'body_GEO.vtx[2876]'
+        self.lid_bt_button.vertex = 'body_GEO.vtx[2881]'
+
+    def create_eye_placement(self):
+        pass
+
+    def browse_click(self):
+        self.path_To_File = QtWidgets.QFileDialog.getOpenFileName(self, "Select Eye Texture Map")[0]
+        print(self.path_To_File)
+        self.eye_text.setText(self.path_To_File)
+
+    def choose_eye_click(self):
+        geo = cmds.ls(sl=True)
+        if len(geo) == 2:
+            text = f'{geo[0]}, {geo[1]}'
+            self.eye_geo_text.setText(text)
+        else:
+            print('You must select both left and right eye geo and click Choose Selected')
+
+    def eye_placement_click(self):
+        map = self.eye_text.toPlainText()
+        eye_placement(map)
+
 
 
     def build(self):
@@ -268,7 +326,8 @@ class FaceRigUI(QtWidgets.QWidget):
         place_lids(self.lid_tp_button.vertex, self.lid_bt_button.vertex)
         place_nose(self.bridge_button.vertex, self.nose_button.vertex)
         place_brows(self.brow_in_button.vertex, self.brow_ot_button.vertex)
-        place_eyes(self.eye_button.vertex)
+        place_eyes()
+        attach_to_body()
 
 class VertexButton(QtWidgets.QPushButton):
     def __int__(self):
@@ -286,7 +345,7 @@ def showUI():
         pm.cmds.deleteUI('Face Rigger')
 
     win = FaceRigUI()
-    win.resize(400, 300)
+    win.resize(400, 600)
     win = createMayaWindow(win)
     win.show()
 
@@ -442,24 +501,38 @@ def place_brows(in_vert, out_vert):
     move_to_point(BROW_RT_IN_TRANS, rt_in_pos)
     move_to_point(BROW_RT_OT_TRANS, rt_ot_pos)
 
-def place_eyes(eye_vert):
-    vert_pos = cmds.pointPosition(eye_vert, w=True)
-    center_pos = [0.0, vert_pos[1], vert_pos[2]]
+def place_eyes():
+    locPos = cmds.xform('eye_placement_locator',q=True,ws=True,rp=True)
+
+    cmds.delete('eye_placement_locator')
+
     # place look at just place the Y
     current_pos = cmds.xform(EYE_LOOK_W_TRANS, q=True, ws=True, rp=True)
 
     # place aim groups
-    move_to_point(EYE_LOOK_W_TRANS, [0.0, vert_pos[1], current_pos[2]])
-    move_to_point(EYE_LOOK_H_TRANS, [0.0, vert_pos[1], current_pos[2]])
+    move_to_point(EYE_LOOK_W_TRANS, [0.0, locPos[1], current_pos[2]])
+    move_to_point(EYE_LOOK_H_TRANS, [0.0, locPos[1], current_pos[2]])
 
     # place left right
     current_left = cmds.xform(EYE_L_LOOK_TRANS, q=True, ws=True, rp=True)
     current_right = cmds.xform(EYE_R_LOOK_TRANS, q=True, ws=True, rp=True)
-    move_to_point(EYE_L_LOOK_TRANS, [vert_pos[0], vert_pos[1], current_left[2]])
-    move_to_point(EYE_R_LOOK_TRANS, [vert_pos[0]*-1.0, vert_pos[1], current_right[2]])
+    move_to_point(EYE_L_LOOK_TRANS, [locPos[0], locPos[1], current_left[2]])
+    move_to_point(EYE_R_LOOK_TRANS, [locPos[0]*-1.0, locPos[1], current_right[2]])
 
-    move_to_point(EYE_L_AIM_TRANS, [vert_pos[0], vert_pos[1], vert_pos[2] - 6.0])
-    move_to_point(EYE_R_AIM_TRANS, [vert_pos[0]*-1.0, vert_pos[1], vert_pos[2] - 6.0])
+    move_to_point(EYE_L_AIM_TRANS, [locPos[0], locPos[1], locPos[2] - 6.0])
+    move_to_point(EYE_R_AIM_TRANS, [locPos[0]*-1.0, locPos[1], locPos[2] - 6.0])
+
+    # constrain projectors to aim joints and parent to projectors group
+    cmds.parentConstraint('left_eye_aim2_jnt', 'left_place3d',mo=True)
+    cmds.parent('left_place3d', 'projectors')
+    conLeft = cmds.parentConstraint('left_place3d', 'bindEyeJoint_L', mo=False)
+    cmds.parentConstraint('right_eye_aim2_jnt', 'right_place3d', mo=True)
+    cmds.parent('right_place3d', 'projectors')
+    conRight = cmds.parentConstraint('right_place3d', 'bindEyeJoint_R', mo=False)
+    cmds.parent(conLeft, conRight, 'constraints')
+
+
+
 
 def move_to_point(transform, pos):
     # create temp trans to snap to point and then snap the trans to the temp trans since xform wasn't working well
@@ -468,6 +541,117 @@ def move_to_point(transform, pos):
     print(f'attempting to match {transform} to {temp}')
     cmds.matchTransform(transform, temp, pos=True, rot=False)
     # cmds.delete(temp)
+
+
+
+def attach_to_body():
+
+    #parent joints to head
+    face_jnts = ['Nose_jnt',
+     'Muzzle_jnt',
+     'rt_brow_ot_jnt',
+     'rt_brow_md_jnt',
+     'rt_brow_in_jnt',
+     'lf_brow_ot_jnt',
+     'lf_brow_md_jnt',
+     'lf_brow_in_jnt']
+
+    cmds.parent(face_jnts, 'Head_M')
+
+    cmds.parent('eye_rig', 'rig_rig')
+
+    cmds.parent('rig_main', 'MotionSystem')
+
+    cmds.parentConstraint('Head_M', 'rig_main', mo=True)
+
+    cmds.scaleConstraint('Root_M', 'rig_main', mo=True)
+
+    cmds.parentConstraint('Head_M', 'eye_head', mo=True)
+
+    cmds.parent('eye_head', 'eye_world', 'rig_noxform')
+
+    cmds.parent('constraints', 'rig_main')
+
+def eye_placement(map, eyeGeo = ['leftEye_GEO', 'rightEye_GEO']):
+    # create shader network for right and left
+    projectors = []
+    for geo in eyeGeo:
+        side = 'left'
+        if 'right' in geo:
+            side = 'right'
+        place2d = cmds.shadingNode('place2dTexture', n=f'{side}_place2d', au=True)
+        file = cmds.shadingNode('file', n=f'{side}_eye_file', at=True)
+        place3d = cmds.shadingNode('place3dTexture', n=f'{side}_place3d', au=True)
+        projectors.append(place3d)
+        projection = cmds.shadingNode('projection', n=f'{side}_projection', au=True)
+        # material = cmds.createNode('surfaceShader', n=f'{side}_eye_mat')
+        material = cmds.shadingNode('surfaceShader', n=f'{side}_eye_mat', asShader=True)
+        shadingGrp = cmds.sets(name=f'{material}SG', empty=True, renderable=True, noSurfaceShader=True)
+
+        # place 2d to file
+        cmds.connectAttr(f'{place2d}.coverage', f'{file}.coverage')
+        cmds.connectAttr(f'{place2d}.translateFrame' ,f'{file}.translateFrame' )
+        cmds.connectAttr(f'{place2d}.rotateFrame', f'{file}.rotateFrame')
+        cmds.connectAttr(f'{place2d}.mirrorU', f'{file}.mirrorU')
+        cmds.connectAttr(f'{place2d}.mirrorV', f'{file}.mirrorV')
+        cmds.connectAttr(f'{place2d}.stagger', f'{file}.stagger')
+        cmds.connectAttr(f'{place2d}.wrapU', f'{file}.wrapU')
+        cmds.connectAttr(f'{place2d}.wrapV', f'{file}.wrapV')
+        cmds.connectAttr(f'{place2d}.repeatUV', f'{file}.repeatUV')
+        cmds.connectAttr(f'{place2d}.offset', f'{file}.offset')
+        cmds.connectAttr(f'{place2d}.rotateUV', f'{file}.rotateUV')
+        cmds.connectAttr(f'{place2d}.noiseUV', f'{file}.noiseUV')
+        cmds.connectAttr(f'{place2d}.vertexUvOne', f'{file}.vertexUvOne')
+        cmds.connectAttr(f'{place2d}.vertexUvTwo', f'{file}.vertexUvTwo')
+        cmds.connectAttr(f'{place2d}.vertexUvThree', f'{file}.vertexUvThree')
+        cmds.connectAttr(f'{place2d}.vertexCameraOne', f'{file}.vertexCameraOne')
+        cmds.connectAttr(f'{place2d}.outUV', f'{file}.uvCoord')
+        cmds.connectAttr(f'{place2d}.outUvFilterSize', f'{file}.uvFilterSize')
+
+        # file to projection
+        cmds.connectAttr(f'{file}.outColor', f'{projection}.image')
+
+        # place 3d to projection
+        cmds.connectAttr(f'{place3d}.worldInverseMatrix[0]', f'{projection}.placementMatrix')
+
+        # projection to mat
+        cmds.connectAttr(f'{projection}.outColor', f'{material}.outColor')
+
+        # set attrs on file and projection
+        cmds.setAttr(f'{file}.fileTextureName', map, type='string')
+        cmds.setAttr(f'{file}.defaultColor', 1.0, 1.0, 1.0, type='double3')
+        cmds.setAttr(f'{place3d}.scaleX', 5.0)
+        cmds.setAttr(f'{place3d}.scaleY', 5.0)
+        cmds.setAttr(f'{place3d}.scaleZ', 5.0)
+        cmds.setAttr(f'{place2d}.wrapU', 0)
+        cmds.setAttr(f'{place2d}.wrapV', 0)
+
+        # assign material
+        cmds.connectAttr(f'{material}.outColor', f'{shadingGrp}.surfaceShader')
+        cmds.sets(geo, e=True, forceElement=shadingGrp)
+
+    # find the center of the eye geo
+    verts = cmds.ls(f'{eyeGeo[0]}.vtx[*]', fl=True)
+    sums = [0.0,0.0,0.0]
+    for v in verts:
+        pos = cmds.pointPosition(v)
+        sums[0] += pos[0]
+        sums[1] += pos[1]
+        sums[2] += pos[2]
+    center = [sums[0]/len(verts), sums[1]/len(verts), sums[2]/len(verts)]
+
+    loc = cmds.spaceLocator(n='eye_placement_locator')[0]
+    cmds.xform(loc, t=(center[0], center[1], center[2]+15), ws=True)
+    cmds.connectAttr(f'{loc}.translate', f'{projectors[0]}.translate')
+    mult = cmds.createNode('multDoubleLinear', n='eye_rev_mdl')
+    cmds.connectAttr(f'{loc}.translateX', f'{mult}.input1')
+    cmds.setAttr(f'{mult}.input2', -1.0)
+    cmds.connectAttr(f'{mult}.output', f'{projectors[1]}.translateX')
+    cmds.connectAttr(f'{loc}.translateY', f'{projectors[1]}.translateY')
+    cmds.connectAttr(f'{loc}.translateZ', f'{projectors[1]}.translateZ')
+
+
+
 
 
 
