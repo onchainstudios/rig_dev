@@ -250,7 +250,7 @@ class FaceRigUI(QtWidgets.QWidget):
 
         self.connect_buttons()
 
-        self.set_defaults()
+        # self.set_defaults()
 
     def connect_buttons(self):
 
@@ -308,6 +308,8 @@ class FaceRigUI(QtWidgets.QWidget):
             print('You must select both left and right eye geo and click Choose Selected')
 
     def eye_placement_click(self):
+        sender = self.sender()
+        sender.setStyleSheet('background-color: #006600;')
         map = self.eye_text.toPlainText()
         eye_placement(map)
 
@@ -451,13 +453,14 @@ def place_lip_center(top_vert, bot_vert):
 def place_lids(top_vert, bot_vert):
     top_pos = cmds.pointPosition(top_vert, w=True)
     bot_pos = cmds.pointPosition(bot_vert, w=True)
-    average_z = (top_pos[2] + bot_pos[2]) / 2
+    average_z = ((top_pos[2] + bot_pos[2]) / 2) + 10
+    average_y = (top_pos[1] + bot_pos[1]) / 2
 
-    move_to_point('Lf_top_lid_grp', [top_pos[0], top_pos[1], average_z])
-    move_to_point('Lf_bot_lid_grp', [bot_pos[0], bot_pos[1], average_z])
+    move_to_point('Lf_top_lid_grp', [top_pos[0], average_y, average_z])
+    move_to_point('Lf_bot_lid_grp', [bot_pos[0], average_y, average_z])
 
-    move_to_point('Rt_top_lid_grp', [top_pos[0]*-1, top_pos[1], average_z])
-    move_to_point('Rt_bot_lid_grp', [bot_pos[0]*-1, bot_pos[1], average_z])
+    move_to_point('Rt_top_lid_grp', [top_pos[0]*-1, average_y, average_z])
+    move_to_point('Rt_bot_lid_grp', [bot_pos[0]*-1, average_y, average_z])
 
 def place_nose(nose_vert, bottom_vert):
 
@@ -475,11 +478,11 @@ def place_nose(nose_vert, bottom_vert):
     base_pos = [0.0, raw_base_pos[1], raw_base_pos[2]]
 
     raw_bot_pos = cmds.pointPosition(bottom_vert, w=True)
-    bot_pos = [0.0, raw_bot_pos[1], raw_bot_pos[0]]
+    bot_pos = [0.0, raw_bot_pos[1], raw_bot_pos[2]]
 
     move_to_point(NOSE_TRANS, base_pos)
 
-    temp = cmds.createNode('transform')
+    temp = cmds.createNode('transform', n='temp_nose')
     move_to_point(temp, bot_pos)
 
     aim_cons = cmds.aimConstraint(temp, NOSE_TRANS, aim=[0, -1, 0], u=[0, 0, 1], wu=[0, 0, 1])[0]
@@ -502,9 +505,9 @@ def place_brows(in_vert, out_vert):
     move_to_point(BROW_RT_OT_TRANS, rt_ot_pos)
 
 def place_eyes():
-    locPos = cmds.xform('eye_placement_locator',q=True,ws=True,rp=True)
+    locPos = cmds.xform('eye_placement_sphere',q=True,ws=True,rp=True)
 
-    cmds.delete('eye_placement_locator')
+    cmds.delete('eye_placement_sphere')
 
     # place look at just place the Y
     current_pos = cmds.xform(EYE_LOOK_W_TRANS, q=True, ws=True, rp=True)
@@ -540,7 +543,7 @@ def move_to_point(transform, pos):
     cmds.xform(temp, ws=True, t=pos)
     print(f'attempting to match {transform} to {temp}')
     cmds.matchTransform(transform, temp, pos=True, rot=False)
-    # cmds.delete(temp)
+    cmds.delete(temp)
 
 
 
@@ -571,6 +574,8 @@ def attach_to_body():
     cmds.parent('eye_head', 'eye_world', 'rig_noxform')
 
     cmds.parent('constraints', 'rig_main')
+
+
 
 def eye_placement(map, eyeGeo = ['leftEye_GEO', 'rightEye_GEO']):
     # create shader network for right and left
@@ -640,15 +645,20 @@ def eye_placement(map, eyeGeo = ['leftEye_GEO', 'rightEye_GEO']):
         sums[2] += pos[2]
     center = [sums[0]/len(verts), sums[1]/len(verts), sums[2]/len(verts)]
 
-    loc = cmds.spaceLocator(n='eye_placement_locator')[0]
-    cmds.xform(loc, t=(center[0], center[1], center[2]+15), ws=True)
-    cmds.connectAttr(f'{loc}.translate', f'{projectors[0]}.translate')
+    sphere = 'eye_placement_sphere'
+    sphere_shape = cmds.createNode('implicitSphere', n='eye_placement_sphereShape')
+    sphere_parent = cmds.listRelatives(sphere_shape, p=True)[0]
+    cmds.rename(sphere_parent, sphere)
+
+    cmds.setAttr(f'{sphere_shape}.radius', 7.5)
+    cmds.xform(sphere, t=(center[0], center[1], center[2]+15), ws=True)
+    cmds.connectAttr(f'{sphere}.translate', f'{projectors[0]}.translate')
     mult = cmds.createNode('multDoubleLinear', n='eye_rev_mdl')
-    cmds.connectAttr(f'{loc}.translateX', f'{mult}.input1')
+    cmds.connectAttr(f'{sphere}.translateX', f'{mult}.input1')
     cmds.setAttr(f'{mult}.input2', -1.0)
     cmds.connectAttr(f'{mult}.output', f'{projectors[1]}.translateX')
-    cmds.connectAttr(f'{loc}.translateY', f'{projectors[1]}.translateY')
-    cmds.connectAttr(f'{loc}.translateZ', f'{projectors[1]}.translateZ')
+    cmds.connectAttr(f'{sphere}.translateY', f'{projectors[1]}.translateY')
+    cmds.connectAttr(f'{sphere}.translateZ', f'{projectors[1]}.translateZ')
 
 
 
