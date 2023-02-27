@@ -271,6 +271,18 @@ class FaceRigUI(QtWidgets.QWidget):
         self.eye_browse_button.clicked.connect(self.browse_click)
         # self.eye_geoselect_button.clicked.connect(self.choose_eye_click)
 
+        self.muzzle_help_button.clicked.connect(self.muzzle_help_click)
+        self.jaw_help_button.clicked.connect(self.jaw_help_click)
+        self.lip_corner_help_button.clicked.connect(self.lip_corner_help_click)
+        self.lip_top_help_button.clicked.connect(self.lip_top_help_click)
+        self.lip_bot_help_button.clicked.connect(self.lip_bot_help_click)
+        self.bridge_help_button.clicked.connect(self.nose_bridge_help_click)
+        self.nose_help_button.clicked.connect(self.nose_bottom_help_click)
+        self.brow_in_help_button.clicked.connect(self.brow_in_help_click)
+        self.brow_ot_help_button.clicked.connect(self.brow_ot_help_click)
+        self.lid_tp_help_button.clicked.connect(self.lid_top_help_click)
+        self.lid_bt_help_button.clicked.connect(self.lid_bot_help_click)
+
     def vertex_click(self):
         sender = self.sender()
         sender.setStyleSheet('background-color: #006600;')
@@ -313,6 +325,127 @@ class FaceRigUI(QtWidgets.QWidget):
         map = self.eye_text.toPlainText()
         eye_placement(map)
 
+    def muzzle_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\muzzle_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Muzzle Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+        
+    def jaw_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\jaw_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Jaw Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def lip_corner_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\lip_corner_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Lip Corner Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def lip_top_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\lip_top_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Lip Top Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def lip_bot_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\lip_bot_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Lip Bottom Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def nose_bridge_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\nose_bridge_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Nose Bridge Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def nose_bottom_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\nose_bottom_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Nose Bottom Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def brow_in_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\brow_in_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Brow In Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def brow_ot_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\brow_ot_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Brow Out Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+        
+    def lid_top_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\lid_top_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Lid Top Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+        
+    def lid_bot_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\lid_bot_vert.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Lid Bot Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
 
 
     def build(self):
@@ -335,6 +468,43 @@ class VertexButton(QtWidgets.QPushButton):
     def __int__(self):
         super(VertexButton,self).__int__()
         self.vertex = None
+
+class ImagePopup(QtWidgets.QDialog):
+    def __int__(self):
+        super(ImagePopup, self).__int__()
+        self.path = None
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+        self.show()
+
+    def add_image(self):
+        image = QtGui.QImage(self.path)
+
+        self.imageLabel = QtWidgets.QLabel()
+        self.imageLabel.setPixmap(QtGui.QPixmap.fromImage(image))
+
+        layout = self.layout()
+        layout.addWidget(self.imageLabel)
+
+class CustomDialog(QtWidgets.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("HELLO!")
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        message = QtWidgets.QLabel("Something happened, is that OK?")
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+
 
 def showUI():
     '''
@@ -659,6 +829,8 @@ def eye_placement(map, eyeGeo = ['leftEye_GEO', 'rightEye_GEO']):
     cmds.connectAttr(f'{mult}.output', f'{projectors[1]}.translateX')
     cmds.connectAttr(f'{sphere}.translateY', f'{projectors[1]}.translateY')
     cmds.connectAttr(f'{sphere}.translateZ', f'{projectors[1]}.translateZ')
+
+
 
 
 
