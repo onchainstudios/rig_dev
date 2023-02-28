@@ -193,6 +193,7 @@ class FaceRigUI(QtWidgets.QWidget):
         self.eye_separator.setFrameShape(QtWidgets.QFrame.HLine)
         self.eye_layout = QtWidgets.QVBoxLayout()
         self.eye_browse_layout = QtWidgets.QHBoxLayout()
+        self.eye_place_layout = QtWidgets.QHBoxLayout()
         self.eye_browse_label = QtWidgets.QLabel('Eye Texture Map')
         self.eye_browse_button = QtWidgets.QPushButton('Browse')
         self.eye_text = QtWidgets.QTextEdit()
@@ -208,9 +209,11 @@ class FaceRigUI(QtWidgets.QWidget):
         self.eye_placement_separator = QtWidgets.QFrame()
         self.eye_placement_separator.setFrameShape(QtWidgets.QFrame.HLine)
         self.eye_placement_button = QtWidgets.QPushButton('Create Eye Placement Locator')
+        self.eye_placement_help_button = QtWidgets.QPushButton('?')
 
         self.eye_layout.addWidget(self.eye_separator)
         self.eye_layout.addLayout(self.eye_browse_layout)
+        self.eye_layout.addLayout(self.eye_place_layout)
         self.eye_browse_layout.addWidget(self.eye_browse_label)
         self.eye_browse_layout.addWidget(self.eye_text)
         self.eye_browse_layout.addWidget(self.eye_browse_button)
@@ -220,7 +223,8 @@ class FaceRigUI(QtWidgets.QWidget):
         # self.eye_geo_layout.addWidget(self.eye_geo_text)
         # self.eye_geo_layout.addWidget(self.eye_geoselect_button)
         self.eye_layout.addWidget(self.eye_placement_separator)
-        self.eye_layout.addWidget(self.eye_placement_button)
+        self.eye_place_layout.addWidget(self.eye_placement_button)
+        self.eye_place_layout.addWidget(self.eye_placement_help_button)
 
 
         # Build
@@ -282,12 +286,12 @@ class FaceRigUI(QtWidgets.QWidget):
         self.brow_ot_help_button.clicked.connect(self.brow_ot_help_click)
         self.lid_tp_help_button.clicked.connect(self.lid_top_help_click)
         self.lid_bt_help_button.clicked.connect(self.lid_bot_help_click)
+        self.eye_placement_help_button.clicked.connect(self.eye_placement_help_click)
 
     def vertex_click(self):
         sender = self.sender()
         sender.setStyleSheet('background-color: #006600;')
         sender.vertex = cmds.ls(sl=True)[0]
-        print(sender.vertex)
 
     def set_defaults(self):
         print('setting defaults for testing')
@@ -307,8 +311,7 @@ class FaceRigUI(QtWidgets.QWidget):
         pass
 
     def browse_click(self):
-        self.path_To_File = QtWidgets.QFileDialog.getOpenFileName(self, "Select Eye Texture Map")[0]
-        print(self.path_To_File)
+        self.path_To_File = QtWidgets.QFileDialog.getOpenFileName(self, "Select Eye Texture Map", 'G:\\Shared drives\\Art Department\\production\\3d\\images\\starWars\\char\\rt')[0]
         self.eye_text.setText(self.path_To_File)
 
     def choose_eye_click(self):
@@ -442,6 +445,17 @@ class FaceRigUI(QtWidgets.QWidget):
 
         popup = QtWidgets.QMessageBox(self)
         popup.setWindowTitle("Lid Bot Vertex Help")
+        image = QtGui.QImage(image_path)
+        popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
+        popup.show()
+
+    def eye_placement_help_click(self):
+        path = os.path.abspath(__file__)
+        base = os.path.split(path)[0]
+        image_path = os.path.join(base, 'images\\eye_placement.png')
+
+        popup = QtWidgets.QMessageBox(self)
+        popup.setWindowTitle("Eye Placement Help")
         image = QtGui.QImage(image_path)
         popup.setIconPixmap(QtGui.QPixmap.fromImage(image))
         popup.show()
@@ -637,11 +651,9 @@ def place_nose(nose_vert, bottom_vert):
     # still need to place nostrils
 
     # get offset constraint and delete it
-    print(f'listing connections on {NOSE_TRANS}')
     cons = cmds.listConnections(f'{NOSE_TRANS}.translateX', s=True, d=False)[0]
 
     if cons:
-        print(f'nose deleting {cons}')
         cmds.delete(cons)
 
     raw_base_pos = cmds.pointPosition(nose_vert, w=True)
@@ -711,7 +723,6 @@ def move_to_point(transform, pos):
     # create temp trans to snap to point and then snap the trans to the temp trans since xform wasn't working well
     temp = cmds.spaceLocator(p=pos, n=f'{transform}_loc')[0]
     cmds.xform(temp, ws=True, t=pos)
-    print(f'attempting to match {transform} to {temp}')
     cmds.matchTransform(transform, temp, pos=True, rot=False)
     cmds.delete(temp)
 
