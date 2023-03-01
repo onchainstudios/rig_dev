@@ -689,6 +689,11 @@ def place_brows(in_vert, out_vert):
 def place_eyes():
     locPos = cmds.xform('eye_placement_sphere',q=True,ws=True,rp=True)
 
+    # delete scale cons on projectors
+    left_cons = cmds.listConnections('left_place3d.scaleX', s=True)[0]
+    right_cons = cmds.listConnections('right_place3d.scaleX', s=True)[0]
+    cmds.delete(left_cons, right_cons)
+
     cmds.delete('eye_placement_sphere')
 
     # place look at just place the Y
@@ -840,6 +845,9 @@ def eye_placement(map, eyeGeo = ['leftEye_GEO', 'rightEye_GEO']):
     cmds.connectAttr(f'{mult}.output', f'{projectors[1]}.translateX')
     cmds.connectAttr(f'{sphere}.translateY', f'{projectors[1]}.translateY')
     cmds.connectAttr(f'{sphere}.translateZ', f'{projectors[1]}.translateZ')
+
+    cmds.scaleConstraint(sphere, projectors[0], mo=True)
+    cmds.scaleConstraint(sphere, projectors[1], mo=True)
 
 
 
