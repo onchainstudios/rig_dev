@@ -527,8 +527,8 @@ def showUI():
     Returns:
     '''
 
-    if pm.cmds.window('Face Rigger', q=True, ex=True):
-        pm.cmds.deleteUI('Face Rigger')
+    if pm.cmds.window('Onchain Face Rigger', q=True, ex=True):
+        pm.cmds.deleteUI('Onchain Face Rigger')
 
     win = FaceRigUI()
     win.resize(400, 600)
@@ -555,7 +555,7 @@ def createMayaWindow(widget, *args, **kwargs):
     # title = widget.windowTitle()
     # if title:
     #     win.setWindowTitle(title)
-    win.setWindowTitle('Face Rigger')
+    win.setWindowTitle('Onchain Face Rigger')
     icon = widget.windowIcon()
     if icon:
         win.setWindowIcon(icon)
@@ -848,6 +848,131 @@ def eye_placement(map, eyeGeo = ['leftEye_GEO', 'rightEye_GEO']):
 
     cmds.scaleConstraint(sphere, projectors[0], mo=True)
     cmds.scaleConstraint(sphere, projectors[1], mo=True)
+
+def lid_sdks(blendNode):
+    # Left
+    # Left top lid close
+    cmds.setAttr('Lf_top_lid.translateY', 1.0)
+    cmds.setAttr(f'{blendNode}.L_top_neg1', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_top_neg1', cd='Lf_top_lid.translateY', itt='linear', ott='linear')
+
+    cmds.setAttr('Lf_top_lid.translateY', -1.0)
+    cmds.setAttr(f'{blendNode}.L_top_neg1', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_top_neg1', cd='Lf_top_lid.translateY', itt='linear', ott='linear')
+    cmds.setAttr('Lf_top_lid.translateY', 1.0)
+
+    # Left bottom lid close
+    cmds.setAttr('Lf_bot_lid.translateY', -1.0)
+    cmds.setAttr(f'{blendNode}.L_bot_1', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_1', cd='Lf_bot_lid.translateY', itt='linear', ott='linear')
+
+    cmds.setAttr('Lf_bot_lid.translateY', 1.0)
+    cmds.setAttr(f'{blendNode}.L_bot_1', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_1', cd='Lf_bot_lid.translateY', itt='linear', ott='linear')
+    cmds.setAttr('Lf_bot_lid.translateY', -1.0)
+
+    # Left top rotateZ
+    cmds.setAttr('Lf_top_lid.rotateZ', 0.0)
+    cmds.setAttr(f'{blendNode}.L_top_45', 0.0)
+    cmds.setAttr(f'{blendNode}.L_top_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_top_45', cd='Lf_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='L_top_neg45', cd='Lf_top_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Lf_top_lid.rotateZ', 45.0)
+    cmds.setAttr(f'{blendNode}.L_top_45', 1.0)
+    cmds.setAttr(f'{blendNode}.L_top_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_top_45', cd='Lf_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='L_top_neg45', cd='Lf_top_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Lf_top_lid.rotateZ', -45.0)
+    cmds.setAttr(f'{blendNode}.L_top_45', 0.0)
+    cmds.setAttr(f'{blendNode}.L_top_neg45', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_top_45', cd='Lf_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='L_top_neg45', cd='Lf_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setAttr('Lf_top_lid.rotateZ', 0.0)
+
+    # Left bottom rotateZ
+    cmds.setAttr('Lf_bot_lid.rotateZ', 0.0)
+    cmds.setAttr(f'{blendNode}.L_bot_45', 0.0)
+    cmds.setAttr(f'{blendNode}.L_bot_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_45', cd='Lf_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_neg45', cd='Lf_bot_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Lf_bot_lid.rotateZ', 45.0)
+    cmds.setAttr(f'{blendNode}.L_bot_45', 1.0)
+    cmds.setAttr(f'{blendNode}.L_bot_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_45', cd='Lf_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_neg45', cd='Lf_bot_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Lf_bot_lid.rotateZ', -45.0)
+    cmds.setAttr(f'{blendNode}.L_bot_45', 0.0)
+    cmds.setAttr(f'{blendNode}.L_bot_neg45', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_45', cd='Lf_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='L_bot_neg45', cd='Lf_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setAttr('Lf_bot_lid.rotateZ', 0.0)
+
+    # Right
+    # Right top lid close
+    cmds.setAttr('Rt_top_lid.translateY', 1.0)
+    cmds.setAttr(f'{blendNode}.R_top_neg1', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_top_neg1', cd='Rt_top_lid.translateY', itt='linear', ott='linear')
+
+    cmds.setAttr('Rt_top_lid.translateY', -1.0)
+    cmds.setAttr(f'{blendNode}.R_top_neg1', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_top_neg1', cd='Rt_top_lid.translateY', itt='linear', ott='linear')
+    cmds.setAttr('Rt_top_lid.translateY', 1.0)
+
+    # Right bottom lid close
+    cmds.setAttr('Rt_bot_lid.translateY', -1.0)
+    cmds.setAttr(f'{blendNode}.R_bot_1', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_1', cd='Rt_bot_lid.translateY', itt='linear', ott='linear')
+
+    cmds.setAttr('Rt_bot_lid.translateY', 1.0)
+    cmds.setAttr(f'{blendNode}.R_bot_1', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_1', cd='Rt_bot_lid.translateY', itt='linear', ott='linear')
+    cmds.setAttr('Rt_bot_lid.translateY', -1.0)
+
+    # Right top rotateZ
+    cmds.setAttr('Rt_top_lid.rotateZ', 0.0)
+    cmds.setAttr(f'{blendNode}.R_top_45', 0.0)
+    cmds.setAttr(f'{blendNode}.R_top_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_top_45', cd='Rt_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='R_top_neg45', cd='Rt_top_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Rt_top_lid.rotateZ', 45.0)
+    cmds.setAttr(f'{blendNode}.R_top_45', 1.0)
+    cmds.setAttr(f'{blendNode}.R_top_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_top_45', cd='Rt_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='R_top_neg45', cd='Rt_top_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Rt_top_lid.rotateZ', -45.0)
+    cmds.setAttr(f'{blendNode}.R_top_45', 0.0)
+    cmds.setAttr(f'{blendNode}.R_top_neg45', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_top_45', cd='Rt_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='R_top_neg45', cd='Rt_top_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setAttr('Rt_top_lid.rotateZ', 0.0)
+
+    # Right bottom rotateZ
+    cmds.setAttr('Rt_bot_lid.rotateZ', 0.0)
+    cmds.setAttr(f'{blendNode}.R_bot_45', 0.0)
+    cmds.setAttr(f'{blendNode}.R_bot_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_45', cd='Rt_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_neg45', cd='Rt_bot_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Rt_bot_lid.rotateZ', 45.0)
+    cmds.setAttr(f'{blendNode}.R_bot_45', 1.0)
+    cmds.setAttr(f'{blendNode}.R_bot_neg45', 0.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_45', cd='Rt_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_neg45', cd='Rt_bot_lid.rotateZ', itt='linear', ott='linear')
+
+    cmds.setAttr('Rt_bot_lid.rotateZ', -45.0)
+    cmds.setAttr(f'{blendNode}.R_bot_45', 0.0)
+    cmds.setAttr(f'{blendNode}.R_bot_neg45', 1.0)
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_45', cd='Rt_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setDrivenKeyframe(blendNode, at='R_bot_neg45', cd='Rt_bot_lid.rotateZ', itt='linear', ott='linear')
+    cmds.setAttr('Rt_bot_lid.rotateZ', 0.0)
+
+
 
 
 
